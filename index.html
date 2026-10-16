@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amasaman Hustle - Ghana Survival</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #fff; margin: 0; padding: 15px; }
+        .card { background-color: #1e1e1e; border-radius: 12px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); max-width: 480px; margin: 0 auto; }
+        h1 { color: #f39c12; text-align: center; font-size: 24px; margin-top: 0; }
+        .stats { display: flex; justify-content: space-between; background: #2a2a2a; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
+        .stat-box { text-align: center; }
+        .stat-val { font-weight: bold; font-size: 18px; color: #2ecc71; }
+        .event-box { background: #2c3e50; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #3498db; }
+        .btn { display: block; width: 100%; padding: 12px; margin: 8px 0; background-color: #f39c12; color: #000; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
+        .btn:hover { background-color: #d35400; color: #fff; }
+        .btn-momo { background-color: #e74c3c; color: white; }
+        .log { font-size: 13px; color: #aaa; margin-top: 15px; max-height: 100px; overflow-y: auto; background: #000; padding: 8px; border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>🇬🇭 Amasaman Hustle</h1>
+    <p style="text-align:center; font-size: 12px; color: #bbb;">Survive everyday Ghanaian living expenses</p>
+    
+    <div class="stats">
+        <div class="stat-box">
+            <div>Cedi Balance</div>
+            <div id="cedi" class="stat-val">GHS 150.00</div>
+        </div>
+        <div class="stat-box">
+            <div>Family Stress</div>
+            <div id="stress" class="stat-val" style="color:#e74c3c;">20%</div>
+        </div>
+        <div class="stat-box">
+            <div>Day</div>
+            <div id="day" class="stat-val" style="color:#3498db;">1</div>
+        </div>
+    </div>
+
+    <div class="event-box" id="eventBox">
+        <strong>Morning Alert:</strong> You wake up today with GHS 150 in hand. Chop money, trotro fares, and light bills are waiting.
+    </div>
+
+    <div id="actions">
+        <button class="btn" onclick="takeTrotro()">🚌 Take Trotro to Work (-GHS 15)</button>
+        <button class="btn" onclick="doHustle()">💼 Work Side Hustle (+GHS 35, +10% Stress)</button>
+        <button class="btn" onclick="payChopMoney()">🍲 Pay Family Chop Money (-GHS 40, -15% Stress)</button>
+        <button class="btn btn-momo" onclick="simulateMoMo()">📱 Simulated MoMo Top-Up (+GHS 100)</button>
+        <button class="btn" style="background:#3498db; color:white;" onclick="nextDay()">🌙 End Day & Face Expenses</button>
+    </div>
+
+    <div class="log" id="log">--- Daily Log Activity ---</div>
+</div>
+
+<script>
+    let cedi = 150;
+    let stress = 20;
+    let day = 1;
+
+    function updateUI() {
+        document.getElementById('cedi').innerText = 'GHS ' + cedi.toFixed(2);
+        document.getElementById('stress').innerText = stress + '%';
+        document.getElementById('day').innerText = day;
+        
+        if (stress >= 100) {
+            alert('Game Over! Family stress reached 100%. You could not handle the living cost.');
+            resetGame();
+        } else if (cedi < 0) {
+            document.getElementById('eventBox').innerHTML = "<strong style='color:#e74c3c;'>WARNING:</strong> You are in debt! Family stress is rising rapidly.";
+            stress += 10;
+        }
+    }
+
+    function log(msg) {
+        let l = document.getElementById('log');
+        l.innerHTML = "<div>• " + msg + "</div>" + l.innerHTML;
+    }
+
+    function takeTrotro() {
+        if(cedi < 15) { alert("Not enough money for trotro fare!"); return; }
+        cedi -= 15;
+        log("Took Trotro to Circle. Paid GHS 15.");
+        updateUI();
+    }
+
+    function doHustle() {
+        cedi += 35;
+        stress += 10;
+        log("Completed a side hustle. Earned GHS 35 but stress increased.");
+        updateUI();
+    }
+
+    function payChopMoney() {
+        if(cedi < 40) { alert("Not enough money for chop money!"); return; }
+        cedi -= 40;
+        stress = Math.max(0, stress - 15);
+        log("Paid GHS 40 chop money. Family is happy!");
+        updateUI();
+    }
+
+    function simulateMoMo() {
+        cedi += 100;
+        log("Simulated MoMo Deposit: Added GHS 100 to wallet.");
+        updateUI();
+    }
+
+    function nextDay() {
+        day++;
+        let events = [
+            { text: "⚡ ECG prepaid ran out! Paid GHS 30 for light bill.", cost: 30, stress: 5 },
+            { text: "📈 Fuel price increased! Inflation hit market food items. Paid GHS 40 extra.", cost: 40, stress: 10 },
+            { text: "📞 Village relative called asking for urgent MoMo transfer! Paid GHS 50.", cost: 50, stress: 15 },
+            { text: "🎁 Susu payout came through! Received GHS 80 bonus.", cost: -80, stress: -10 }
+        ];
+
+        let randomEvent = events[Math.floor(Math.random() * events.length)];
+        cedi -= randomEvent.cost;
+        stress = Math.min(100, Math.max(0, stress + randomEvent.stress));
+
+        document.getElementById('eventBox').innerHTML = `<strong>Day ${day} Life Event:</strong> ${randomEvent.text}`;
+        log(`Day ${day} started. ${randomEvent.text}`);
+        updateUI();
+    }
+
+    function resetGame() {
+        cedi = 150;
+        stress = 20;
+        day = 1;
+        updateUI();
+    }
+</script>
+
+</body>
+</html>
